@@ -14,6 +14,7 @@ from websocket import create_connection
 import requests
 import sys
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -46,10 +47,9 @@ class TvDatafeed:
 
         Args:
         """
-
         self.ws_debug = False
 
-        logging.info('setting token to hard-coded value')
+        logger.info('setting token to hard-coded value')
         self.token = os.environ['TV_AUTH_TOKEN']
 
         self.data_provider = 'prodata' if prodata else 'data'
