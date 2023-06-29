@@ -174,7 +174,7 @@ class TvDatafeed:
 
         res = requests.get(full_url)
         res = json.loads(res.text)["symbols"]
-        res = pd.DataFrame(res).astype(str).drop_duplicates()
+        res = pd.DataFrame(res)
         if cols is not None:
             res = res[cols]
 
@@ -184,7 +184,7 @@ class TvDatafeed:
                 try:
                     url = f"{full_url}&start={idx}"
                     resp = requests.get(url)
-                    current = pd.DataFrame(json.loads(resp.text)["symbols"]).astype(str).drop_duplicates()
+                    current = pd.DataFrame(json.loads(resp.text)["symbols"])
                     if cols is not None:
                         current = current[cols]
                     res = pd.concat([res, current])
@@ -193,7 +193,7 @@ class TvDatafeed:
                     logger.info(f"Exception happened -> {e}")
                     logger.info("end of data reached.")
                     break
-        return res
+        return res.astype(str).drop_duplicates()
 
     def get_hist(
         self,
