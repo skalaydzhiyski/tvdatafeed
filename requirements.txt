@@ -2,3 +2,4 @@ setuptools
 pandas
 websocket-client
 requests
+tqdm

@@ -16,10 +16,5 @@ setup(
     author="@StreamAlpha",
     author_email="",
     description="TradingView historical data downloader",
-    install_requires=[
-        "setuptools",
-        "pandas",
-        "websocket-client",
-        "requests"
-    ],
+    install_requires=["setuptools", "pandas", "websocket-client", "requests"],
 )
