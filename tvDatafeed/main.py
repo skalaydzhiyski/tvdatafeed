@@ -166,7 +166,7 @@ class TvDatafeed:
         Args:
           symbol: str (MSFT, ...)
           exchange: str (NASDAQ, NSE, ...)
-          search_type: str (stocks, bonds, economy, funds, futures, forex, crypto, indices, swap, spot, structured)
+          search_type: str (stocks, bond, economy, funds, futures, forex, crypto, indices, swap, spot, structured)
           n_records: int (1,2,3...)
         """
         search_string = f"?text={symbol}&hl=1&exchange={exchange}&lang=en&search_type={search_type}&domain=production&sort_by_country=US"
