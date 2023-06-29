@@ -1,8 +1,5 @@
 from setuptools import setup
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
 setup(
     name="tvdatafeed",
     version="2.0.0",
@@ -19,8 +16,6 @@ setup(
     author="@StreamAlpha",
     author_email="",
     description="TradingView historical data downloader",
-    long_description_content_type="text/markdown",
-    long_description=long_description,
     install_requires=[
         "setuptools",
         "pandas",

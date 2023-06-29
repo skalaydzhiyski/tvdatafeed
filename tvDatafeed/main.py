@@ -35,27 +35,25 @@ class Interval(enum.Enum):
 
 class TvDatafeed:
     sign_in_url = 'https://www.tradingview.com/accounts/signin/'
-    ws_headers = json.dumps({"Origin": "https://prodata.tradingview.com"})
     signin_headers = {'Referer': 'https://www.tradingview.com'}
     ws_timeout = 5
 
     def __init__(
         self,
-        username: str = None,
-        password: str = None,
+        prodata=False
     ) -> None:
         """Create TvDatafeed object
 
         Args:
-            username (str, optional): tradingview username. Defaults to None.
-            password (str, optional): tradingview password. Defaults to None.
         """
 
         self.ws_debug = False
 
         logging.info('setting token to hard-coded value')
-        self.token = os.environ('TV_AUTH_TOKEN')
+        self.token = os.environ['TV_AUTH_TOKEN']
 
+        self.data_provider = 'prodata' if prodata else 'data'
+        self.ws_headers = json.dumps({"Origin": f"https://{self.data_provider}.tradingview.com"})
         self.ws = None
         self.session = self.__generate_session()
         self.chart_session = self.__generate_chart_session()
@@ -64,7 +62,7 @@ class TvDatafeed:
     def __create_connection(self):
         logging.debug("creating websocket connection")
         self.ws = create_connection(
-            "wss://prodata.tradingview.com/socket.io/websocket", headers=self.ws_headers, timeout=self.ws_timeout
+            f"wss://{self.data_provider}.tradingview.com/socket.io/websocket", headers=self.ws_headers, timeout=self.ws_timeout
         )
 
     @staticmethod
