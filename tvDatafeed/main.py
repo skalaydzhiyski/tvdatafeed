@@ -18,6 +18,8 @@ from tqdm import tqdm
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# TODO: this whole thing can be cleaned up...
+
 
 class Interval(enum.Enum):
     in_1_minute = "1"
@@ -59,10 +61,11 @@ class TvDatafeed:
         self.session = self.__generate_session()
         self.chart_session = self.__generate_chart_session()
 
-    def __create_connection(self):
+    def __create_connection(self, url=None):
         logging.debug("creating websocket connection")
+        url = url or f"wss://{self.data_provider}.tradingview.com/socket.io/websocket"
         self.ws = create_connection(
-            f"wss://{self.data_provider}.tradingview.com/socket.io/websocket",
+            url=url,
             headers=self.ws_headers,
             timeout=self.ws_timeout,
         )
@@ -104,6 +107,7 @@ class TvDatafeed:
 
     def __send_message(self, func, args):
         m = self.__create_message(func, args)
+        print(m)
         if self.ws_debug:
             print(m)
         self.ws.send(m)
@@ -180,7 +184,7 @@ class TvDatafeed:
 
         if n_records > 50:
             idx = 50
-            for idx in tqdm(range(50, n_records+1, 50)):
+            for idx in tqdm(range(50, n_records + 1, 50)):
                 try:
                     url = f"{full_url}&start={idx}"
                     resp = requests.get(url)
@@ -193,6 +197,7 @@ class TvDatafeed:
                     logger.info(f"Exception happened -> {e}")
                     logger.info("end of data reached.")
                     break
+
         return res.astype(str).drop_duplicates()
 
     def get_hist(
