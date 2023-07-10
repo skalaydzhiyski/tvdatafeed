@@ -107,7 +107,7 @@ class TvDatafeed:
 
     def __send_message(self, func, args):
         m = self.__create_message(func, args)
-        print(m)
+        #print(m)
         if self.ws_debug:
             print(m)
         self.ws.send(m)
