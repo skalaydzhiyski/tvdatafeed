@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class Interval(enum.Enum):
+    in_1_second = "1S"
+    in_5_second = "5S"
+    in_10_second = "10S"
+    in_30_second = "30S"
     in_1_minute = "1"
     in_3_minute = "3"
     in_5_minute = "5"
