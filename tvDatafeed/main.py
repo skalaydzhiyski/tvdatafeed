@@ -14,6 +14,7 @@ from websocket import create_connection
 import requests
 import sys
 from tqdm import tqdm
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class TvDatafeed:
     sign_in_url = "https://www.tradingview.com/accounts/signin/"
     symbol_search_base_url = "https://symbol-search.tradingview.com/symbol_search/v3"
     signin_headers = {"Referer": "https://www.tradingview.com"}
-    ws_timeout = 5
+    ws_timeout = 100000 # TODO: changeme!!
 
     def __init__(self, prodata=False) -> None:
         """Create TvDatafeed object
@@ -62,8 +63,8 @@ class TvDatafeed:
             {"Origin": f"https://{self.data_provider}.tradingview.com"}
         )
         self.ws = None
-        self.session = self.__generate_session()
         self.chart_session = self.__generate_chart_session()
+        self.session = self.__generate_quote_session()
 
     def __create_connection(self, url=None):
         logging.debug("creating websocket connection")
@@ -85,16 +86,16 @@ class TvDatafeed:
             logger.error("error in filter_raw_message")
 
     @staticmethod
-    def __generate_session():
+    def __generate_quote_session():
         stringLength = 12
-        letters = string.ascii_lowercase
+        letters = string.ascii_lowercase + "1234567890" + string.ascii_uppercase
         random_string = "".join(random.choice(letters) for i in range(stringLength))
         return "qs_" + random_string
 
     @staticmethod
     def __generate_chart_session():
         stringLength = 12
-        letters = string.ascii_lowercase
+        letters = string.ascii_lowercase + "1234567890" + string.ascii_uppercase
         random_string = "".join(random.choice(letters) for i in range(stringLength))
         return "cs_" + random_string
 
@@ -111,7 +112,7 @@ class TvDatafeed:
 
     def __send_message(self, func, args):
         m = self.__create_message(func, args)
-        #print(m)
+        print(m)
         if self.ws_debug:
             print(m)
         self.ws.send(m)
@@ -183,9 +184,6 @@ class TvDatafeed:
         res = requests.get(full_url)
         res = json.loads(res.text)["symbols"]
         res = pd.DataFrame(res)
-        if cols is not None:
-            res = res[cols]
-
         if n_records > 50:
             idx = 50
             for idx in tqdm(range(50, n_records + 1, 50)):
@@ -202,7 +200,9 @@ class TvDatafeed:
                     logger.info("end of data reached.")
                     break
 
-        return res.astype(str).drop_duplicates()
+        if cols is not None:
+            res = res[cols]
+        return res
 
     def get_hist(
         self,
@@ -291,16 +291,20 @@ class TvDatafeed:
 
         raw_data = ""
 
-        logger.debug(f"getting data for {symbol}...")
+        print(f"getting data for {symbol}...")
         while True:
             try:
                 result = self.ws.recv()
                 raw_data = raw_data + result + "\n"
             except Exception as e:
-                logger.error(e)
+                print(e)
                 break
 
+            if 'series_loading' in result:
+                print('series_loading found in result !')
+
             if "series_completed" in result:
+                print('series_completed found in result !')
                 break
 
         return self.__create_df(raw_data, symbol)
