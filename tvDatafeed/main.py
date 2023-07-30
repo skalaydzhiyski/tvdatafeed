@@ -112,7 +112,6 @@ class TvDatafeed:
 
     def __send_message(self, func, args):
         m = self.__create_message(func, args)
-        print(m)
         if self.ws_debug:
             print(m)
         self.ws.send(m)
@@ -182,6 +181,7 @@ class TvDatafeed:
         full_url = f"{self.symbol_search_base_url}/{search_string}"
 
         res = requests.get(full_url)
+        print(res)
         res = json.loads(res.text)["symbols"]
         res = pd.DataFrame(res)
         if n_records > 50:
@@ -300,11 +300,7 @@ class TvDatafeed:
                 print(e)
                 break
 
-            if 'series_loading' in result:
-                print('series_loading found in result !')
-
             if "series_completed" in result:
-                print('series_completed found in result !')
                 break
 
         return self.__create_df(raw_data, symbol)
